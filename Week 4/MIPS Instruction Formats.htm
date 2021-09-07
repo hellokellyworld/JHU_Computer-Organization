@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<!-- saved from url=(0077)http://max.cs.kzoo.edu/cs230/Resources/MIPS/MachineXL/InstructionFormats.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <title>MIPS Instruction Formats</title>
+    
+    <link rel="stylesheet" type="text/css" href="./MIPS Instruction Formats_files/styles.css">
+    <link rel="stylesheet" type="text/css" href="./MIPS Instruction Formats_files/slideStyles.css">
+    <style>
+        th, td { font-size: 75%; }
+        .small { font-size: medium; }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.996.0" data-gr-ext-installed="">
+
+<h1>MIPS Instruction Formats</h1>
+
+<p>&nbsp;</p>
+
+<hr>
+
+
+<ul>
+
+<li>
+All MIPS instructions are encoded in binary.
+</li>
+
+<li>
+All MIPS instructions are 32 bits long.
+	<ul>
+            <li class="no-bullet">
+	(Note: some assembly langs do not
+	have uniform length for all instructions)
+            </li>
+	</ul>
+
+        <blockquote>
+<h5>Examples:</h5>
+<pre class="code">            001000 10011010100000000000000100
+            000010 00000000000000000100000001
+            000000 10001100101000000000100000
+            100011 10011010000000000000100000
+            000100 01000000000000000000000101
+</pre>
+        </blockquote>
+</li>
+
+<li>
+All instructions have an <span class="keyword">opcode</span>
+(or <span class="keyword">op</span>) that specifies the operation
+(first 6 bits).
+</li>
+
+<li>
+    There are 32 registers.  <em>(Need 5 bits to uniquely identify all 32.)</em>
+</li>
+
+<li>
+There are three instruction categories:
+I-format, J-format, and R-format (most common).
+</li>
+
+<li class="no-bullet">
+<ul>
+
+<li class="no-bullet">
+<table border="0">
+<tbody><tr> <td style="vertical-align:middle">
+        <h3>I-Format:</h3>
+</td>
+<td>
+<table border="6">
+<tbody><tr>
+<th class="contrast">op</th>
+<th class="contrast">rs</th>
+<th class="contrast">rt</th>
+<th class="contrast" style="padding-left: 100; padding-right: 100">immediate</th>
+<td rowspan="2"><span class="keyword"><code>&nbsp;</code><br>Example:</span>
+    <code>addi $t2, $s3, 4</code>
+</td></tr>
+<tr>
+<td><code>001000</code></td>
+<td><code>10011</code></td>
+<td><code>01010</code></td>
+<td style="padding-left: 100; padding-right: 100">
+    <code>0000000000000100</code></td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+</li>
+
+<li class="no-bullet">
+<table border="0">
+<tbody><tr> <td style="vertical-align:middle">
+        <h3>J-Format:</h3>
+</td>
+<td>
+<table border="6">
+<tbody><tr>
+<th class="contrast">op</th>
+<th class="contrast" style="padding-left: 100; padding-right: 100">address</th>
+<td rowspan="2"><span class="keyword"><code>&nbsp;</code><br>Example:</span>
+    <code>j LOOP</code> &nbsp; &nbsp; &nbsp; (or <code>j 1028</code>)
+</td></tr>
+<tr>
+<td><code>000010</code></td>
+<td style="padding-left: 100; padding-right: 100">
+    <code>00000000000000000100000001</code></td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+</li>
+
+<li class="no-bullet">
+<table border="0">
+<tbody><tr> <td style="vertical-align:middle">
+        <h3>R-Format:</h3>
+</td>
+<td>
+<center><table border="6">
+<tbody><tr>
+<th class="contrast">op</th>
+<th class="contrast">rs</th>
+<th class="contrast">rt</th>
+<th class="contrast">rd</th>
+<th class="contrast">shamt</th>
+<th class="contrast">funct</th>
+<td rowspan="2"><span class="keyword"><code>&nbsp;</code><br>Example:</span>
+    <code>add $s0, $s1, $s2</code>
+</td></tr>
+<tr>
+<td><code>000000</code></td>
+<td><code>10001</code></td>
+<td><code>10010</code></td>
+<td><code>10000</code></td>
+<td><code>00000</code></td>
+<td><code>100000</code></td>
+</tr>
+</tbody></table></center>
+</td>
+</tr>
+</tbody></table>
+</li>
+
+</ul>
+
+</li>
+
+</ul>
+
+<hr>
+
+<h1>Typical Instruction Formats</h1>
+
+<hr>
+
+<h3>Basic I-format Instructions</h3>
+
+<ul>
+
+<li>Have 2 registers and a constant value immediately present in the
+    instruction.
+	<ul> <ul>
+            <li>
+		rs: source register (5 bits)
+            </li>
+            <li>
+		rt: destination register (5 bits)
+            </li>
+            <li>
+		immediate value (16 bits)
+            </li>
+        </ul> </ul>
+</li>
+
+</ul>
+
+        <blockquote>
+<h5>Instructions that follow typical format:</h5>
+        </blockquote>
+
+<center>
+    <table border="1">
+        <tbody><tr>
+            <th class="contrast" rowspan="3" valign="bottom">Name</th>
+            <th class="contrast" rowspan="3" valign="bottom">Format</th>
+            <th class="contrast" colspan="6">Layout</th>
+            <th class="contrast" rowspan="3" valign="bottom">Example</th>
+        </tr>
+        <tr>
+            <th class="contrast">6 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">6 bits</th>
+        </tr>
+        <tr>
+            <th class="contrast">op</th>
+            <th class="contrast">rs</th>
+            <th class="contrast">rt</th>
+            <th class="contrast" colspan="3">immediate</th>
+        </tr>
+
+        <tr>
+            <td class="meta">addi</td><td class="meta">I</td><td>8</td>
+            <td>2</td><td>1</td><td colspan="3">100</td>
+            <td class="meta">addi $1, $2, 100</td>
+        </tr>
+        <tr>
+            <td class="meta">addiu</td><td class="meta">I</td><td>9</td>
+            <td>2</td><td>1</td><td colspan="3">100</td>
+            <td class="meta">addiu $1, $2, 100</td>
+        </tr>
+        <tr>
+            <td class="meta">andi</td><td class="meta">I</td><td>12</td>
+            <td>2</td><td>1</td><td colspan="3">100</td>
+            <td class="meta">andi $1, $2, 100</td>
+        </tr>
+        <tr>
+            <td class="meta">ori</td><td class="meta">I</td><td>13</td>
+            <td>2</td><td>1</td><td colspan="3">100</td>
+            <td class="meta">ori $1, $2, 100</td>
+        </tr>
+        <tr>
+            <td class="meta">slti</td><td class="meta">I</td><td>10</td>
+            <td>2</td><td>1</td><td colspan="3">100</td>
+            <td class="meta">slti $1, $2, 100</td>
+        </tr>
+        <tr>
+            <td class="meta">sltiu</td><td class="meta">I</td><td>11</td>
+            <td>2</td><td>1</td><td colspan="3">100</td>
+            <td class="meta">sltiu $1, $2, 100</td>
+        </tr>
+    </tbody></table>
+</center>
+
+<blockquote><em>
+    <span class="keyword">NOTE:</span> Order of components in
+    machine code is different from assembly code.  Assembly code order
+    is similar to C, destination first.  Machine code has source register,
+    then destination.
+    </em></blockquote>
+
+<ul>
+
+<h4>Example</h4>
+
+<pre>        <code>addi $t2, $s3, 4</code>       (registers 10 and 19)
+</pre>
+
+</ul>
+
+<center><table border="6">
+<tbody><tr>
+<th class="contrast">op</th>
+<th class="contrast">rs</th>
+<th class="contrast">rt</th>
+<th class="contrast" style="padding-left: 100; padding-right: 100">immediate</th>
+</tr>
+<tr>
+<td><code>8</code></td>
+<td><code>19</code></td>
+<td><code>10</code></td>
+<td style="padding-left: 100; padding-right: 100">
+    <code>4</code></td>
+</tr>
+<tr>
+<td><code>001000</code></td>
+<td><code>10011</code></td>
+<td><code>01010</code></td>
+<td style="padding-left: 100; padding-right: 100">
+    <code>0000000000000100</code></td>
+</tr>
+</tbody></table></center>
+
+<ul>
+    <li><span class="keyword">Exceptions:</span>
+    <code>beq</code>, <code>bne</code>,
+    <code>lw</code>, <code>sw</code>,
+    <code>lui</code>
+    (See <a href="http://max.cs.kzoo.edu/cs230/Resources/MIPS/MachineXL/FormatExceptions.html">format exceptions</a>)
+    </li>
+</ul>
+
+<hr>
+
+<h3>J-format Instructions</h3>
+
+<ul>
+
+<li>Have an address (part of one, actually) in the instruction.
+
+</li></ul>
+
+<center>
+    <table border="1">
+        <tbody><tr>
+            <th class="contrast" rowspan="3" valign="bottom">Name</th>
+            <th class="contrast" rowspan="3" valign="bottom">Format</th>
+            <th class="contrast" colspan="6">Layout</th>
+            <th class="contrast" rowspan="3" valign="bottom">Example</th>
+        </tr>
+        <tr>
+            <th class="contrast">6 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">6 bits</th>
+        </tr>
+        <tr>
+            <th class="contrast">op</th>
+            <th class="contrast" colspan="5">address</th>
+        </tr>
+
+        <tr>
+            <td class="meta">j</td><td class="meta">J</td><td>2</td>
+            <td colspan="5">2500</td><td class="meta">j 10000</td>
+        </tr>
+        <tr>
+            <td class="meta">jal</td><td class="meta">J</td><td>3</td>
+            <td colspan="5">2500</td><td class="meta">jal 10000</td>
+        </tr>
+    </tbody></table>
+</center>
+
+<ul>
+
+<h4>Example</h4>
+
+<pre>        <code>j LOOP</code>
+</pre>
+
+<p>
+The address stored in a <code>j</code> instruction is 26 bits of
+the address associated with the specified label.  The 26 bits are
+achieved by dropping the high-order 4 bits of the address and the
+low-order 2 bits (which would always be 00, since addresses are always
+divisible by 4).
+</p>
+<pre class="code">    address = low-order 26 bits of (addrFromLabelTable/4)
+</pre>
+
+<p>
+In the example above, if
+<code>LOOP</code> is at address <code>1028</code>, then the value
+stored in the machine instruction would be <code>257</code>
+(<code>257&nbsp;=&nbsp;1028/4</code>).
+
+</p></ul>
+
+<center><table border="6">
+<tbody><tr>
+<th class="contrast">op</th>
+<th class="contrast" style="padding-left: 100; padding-right: 100">address</th>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td style="padding-left: 100; padding-right: 100">
+    <code>257</code></td>
+</tr>
+<tr>
+<td><code>000010</code></td>
+<td style="padding-left: 100; padding-right: 100">
+    <code>00000000000000000100000001</code></td>
+</tr>
+</tbody></table></center>
+
+<hr>
+
+<h3>Basic R-format Instructions</h3>
+
+<ul>
+    <li>Have op <code>0</code>.  (all of them!)</li>
+    <li>
+    Also have:
+	<ul> <ul>
+        <li class="first">
+	rs: 1st register operand (register source) (5 bits)
+        </li>
+        <li>
+	rt: 2nd register operand (5 bits)
+        </li>
+        <li>
+	rd: register destination (5 bits)
+        </li>
+        <li>
+	shamt: shift amount (0 when not applicable) (5 bits)
+        </li>
+        <li>
+	funct: function code (identifies the specific R-format instruction)
+	(6 bits)
+        </li>
+	</ul> </ul>
+</li>
+</ul>
+
+
+<center>
+    <table border="1">
+        <tbody><tr>
+            <th class="contrast" rowspan="3" valign="bottom">Name</th>
+            <th class="contrast" rowspan="3" valign="bottom">Format</th>
+            <th class="contrast" colspan="6">Layout</th>
+            <th class="contrast" rowspan="3" valign="bottom">Example</th>
+        </tr>
+        <tr>
+            <th class="contrast">6 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">5 bits</th>
+            <th class="contrast">6 bits</th>
+        </tr>
+        <tr>
+            <th class="contrast">op</th>
+            <th class="contrast">rs</th>
+            <th class="contrast">rt</th>
+            <th class="contrast">rd</th>
+            <th class="contrast">shamt</th>
+            <th class="contrast">funct</th>
+        </tr>
+
+        <tr>
+            <td class="meta">add</td><td class="meta">R</td><td>0</td>
+            <td>2</td><td>3</td><td>1</td><td>0</td>
+            <td>32</td><td class="meta">add $1, $2, $3</td>
+        </tr>
+        <tr>
+            <td class="meta">addu</td><td class="meta">R</td><td>0</td>
+            <td>2</td><td>3</td><td>1</td><td>0</td>
+            <td>33</td><td class="meta">addu $1, $2, $3</td>
+        </tr>
+        <tr>
+            <td class="meta">sub</td><td class="meta">R</td><td>0</td>
+            <td>2</td><td>3</td><td>1</td><td>0</td>
+            <td>34</td><td class="meta">sub $1, $2, $3</td>
+        </tr>
+        <tr>
+            <td class="meta">subu</td><td class="meta">R</td><td>0</td>
+            <td>2</td><td>3</td><td>1</td><td>0</td>
+            <td>35</td><td class="meta">subu $1, $2, $3</td>
+        </tr>
+        <tr>
+            <td class="meta">and</td><td class="meta">R</td><td>0</td>
+            <td>2</td><td>3</td><td>1</td><td>0</td>
+            <td>36</td><td class="meta">and $1, $2, $3</td>
+        </tr>
+        <tr>
+            <td class="meta">or</td><td class="meta">R</td><td>0</td>
+            <td>2</td><td>3</td><td>1</td><td>0</td>
+            <td>37</td><td class="meta">or $1, $2, $3</td>
+        </tr>
+        <tr>
+            <td class="meta">nor</td><td class="meta">R</td><td>0</td>
+            <td>2</td><td>3</td><td>1</td><td>0</td>
+            <td>39</td><td class="meta">nor $1, $2, $3</td>
+        </tr>
+        <tr>
+            <td class="meta">slt</td><td class="meta">R</td><td>0</td>
+            <td>2</td><td>3</td><td>1</td><td>0</td>
+            <td>42</td><td class="meta">slt $1, $2, $3</td>
+        </tr>
+        <tr>
+            <td class="meta">sltu</td><td class="meta">R</td><td>0</td>
+            <td>2</td><td>3</td><td>1</td><td>0</td>
+            <td>43</td><td class="meta">sltu $1, $2, $3</td>
+        </tr>
+    </tbody></table>
+</center>
+
+<p class="center small">
+<em>NOTE: op is 0, so funct disambiguates</em>
+</p>
+
+<ul>
+
+<h4>Example</h4>
+
+<pre>        <code>add $s0, $s1, $s2</code>       (registers 16, 17, 18)
+</pre>
+
+</ul>
+
+<center><table border="6">
+<tbody><tr>
+<th class="contrast">op</th>
+<th class="contrast">rs</th>
+<th class="contrast">rt</th>
+<th class="contrast">rd</th>
+<th class="contrast">shamt</th>
+<th class="contrast">funct</th>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td><code>17</code></td>
+<td><code>18</code></td>
+<td><code>16</code></td>
+<td><code>0</code></td>
+<td><code>32</code></td>
+</tr>
+<tr>
+<td><code>000000</code></td>
+<td><code>10001</code></td>
+<td><code>10010</code></td>
+<td><code>10000</code></td>
+<td><code>00000</code></td>
+<td><code>100000</code></td>
+</tr>
+</tbody></table></center>
+
+<blockquote>
+    <span class="keyword">NOTE:</span> Order of components in
+    machine code is different from assembly code.  Assembly code order
+    is similar to C, destination first.  Machine code has destination
+    last.
+</blockquote>
+
+<table class="center" style="text-align: left">
+    <tbody><tr><td>C:</td>
+        <td><code>a = b + c</code></td></tr>
+    <tr><td>assembly code:</td>
+        <td><code>add $s0, $s1, $s2 &nbsp;&nbsp;
+                <span class="comment"># add
+                    <span class="keyword">rd</span>,
+                    rs, rt</span></code></td></tr>
+    <tr><td>machine code:</td>
+        <td><code>000000 10001 10010 10000 0000 100000</code><br>
+            (<code><span class="comment">op rs rt
+                    <span class="keyword">rd</span>
+                    shamt funct</span></code>)
+        </td></tr>
+</tbody></table>
+
+<p>&nbsp;</p>
+
+
+<hr>
+
+<div class="prev"><a href="http://max.cs.kzoo.edu/cs230/Resources/MIPS/MachineXL/DesignPrinciples.html">Previous Slide</a></div>
+<div class="next"><a href="http://max.cs.kzoo.edu/cs230/Resources/MIPS/MachineXL/FormatExceptions.html">Format Exceptions</a></div>
+<div class="attribution">Alyce Brady, Kalamazoo College</div>
+<br>
+<div class="next"><a href="http://max.cs.kzoo.edu/cs230/Resources/MIPS/MachineXL/mipsTableByFormat.html">All Mappings</a></div>
+
+
+
+</body></html>

@@ -1,0 +1,34 @@
+/* Style information for presentation slides */
+
+@import url(/cs230/styles_old.css);
+@import url(/CSShared/styles/defaultSlideStyles.css);
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  margin-bottom: 10px;
+  font-family: arial, verdana, sans serif;
+  font-weight: bold;
+  line-height: initial;
+}
+
+h1, h2, h3,
+.h1, .h2, .h3 {
+  margin-top: 25px; margin-bottom: 25px;
+  font-family: arial, verdana, sans serif;
+  font-weight: bold;
+  line-height: initial;
+}
+
+hr {
+  margin-top, margin-bottom: initial;
+  font-family: arial, verdana, sans serif;
+  font-weight: bold;
+  border-top: 2px solid rgba(0, 0, 0, 1.0);
+}
+
+code, pre, .code { font-size: x-large; }
+
+
+li.first { margin-top: 1em; }
+li { margin-bottom: 1em; }
+
