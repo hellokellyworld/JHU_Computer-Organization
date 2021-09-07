@@ -1,0 +1,9 @@
+/* print.css -
+ *
+ * This file defines styles to use when printing.
+ */
+
+#shell {border: none;}
+#header {display: none;}
+#navigation {display: none;}
+#footer {display:none}

@@ -1,0 +1,62 @@
+# This program accesses an array in ways that provide data about the parameters
+# of the cache on the simulated computer.  Here is the pseudocode.
+
+#    /* Repeat a given number of times. */
+#    for (k = 0; k < repcount; k++) {
+#      /* Step through the selected array segment with the given step size. */
+#      limit = arraysize - stepsize + 1;
+#      for (index = 0; index < limit; index = index + stepsize) {
+#        /* Right-hand side accesses the cache. */
+#        array[index/4] = array[index/4] + 1;
+#      }
+#    }
+
+	.data
+array:
+	.space	2048
+	
+	.text
+start:
+
+# Supply values for array size, step size, and repetition count.
+# arraysize must be a positive power of 2, less than or equal the number of bytes
+#   allocated for "array".
+# stepsize must be a power of 2 greater than 4 and less than or equal to arraysize.
+# repcount must be at least 1.
+	li	$s0, _____	# array size
+	li	$s1, _____	# step size
+	li	$s2, _____	# rep count
+	
+	# computation of limit, contained in $s3
+	sub	$s3,$s0,$s1
+	addiu	$s3,$s3,1
+	
+outerloop:
+	# loop initialization: $s4 contains index, $s5 contains &array[index]
+	add	$s4,$0,$0
+	la	$s5,array
+
+# summary of register use:
+#  $s0 = array size in bytes
+#  $s1 = stepsize in bytes
+#  $s2 = number of times to repeat
+#  $s3 = limit in bytes
+#  $s4 = index in bytes
+#  $s5 = &array[index/4]
+	
+innerloop:
+	# array[index/4]++
+	lw	$t0,0($s5)
+	addi	$t0,$t0,1
+	sw	$t0,0($s5)
+	
+	# inner loop done?
+	addu	$s4,$s4,$s1
+	addu	$s5,$s5,$s1
+	blt	$s4,$s3,innerloop
+	
+	addi	$s2,$s2,-1
+	bgtz	$s2,outerloop
+		
+	li	$v0,10
+	syscall

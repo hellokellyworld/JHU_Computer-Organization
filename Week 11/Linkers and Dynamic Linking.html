@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0081)https://web.stanford.edu/~ouster/cgi-bin/cs140-winter12/lecture.php?topic=linkers -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Linkers and Dynamic Linking</title>
+    <link rel="stylesheet" type="text/css" href="./Linkers and Dynamic Linking_files/main.css">
+    <link rel="stylesheet" type="text/css" href="./Linkers and Dynamic Linking_files/print.css" media="print">
+      </head>
+  <body id="lectureSmall" data-new-gr-c-s-check-loaded="14.1004.0" data-gr-ext-installed="">
+    <div id="shell">
+      <div id="header">
+        <h1><a href="https://web.stanford.edu/~ouster/cgi-bin/cs140-winter12/index.php">CS 140: Operating Systems (Winter 2012)</a></h1>
+        <div id="navigation">
+          <table cellspacing="0">
+            <tbody><tr>
+              <td class="leftSpacer"></td>
+              <td><a href="https://web.stanford.edu/~ouster/cgi-bin/cs140-winter12/index.php">Home</a></td>
+              <td><a href="https://web.stanford.edu/~ouster/cgi-bin/cs140-winter12/info.php">Class Info</a></td>
+              <td class="selected"><a href="https://web.stanford.edu/~ouster/cgi-bin/cs140-winter12/lectures.php">Lectures</a></td>
+              <td><a href="https://web.stanford.edu/~ouster/cgi-bin/cs140-winter12/projects.php">Projects</a></td>
+              <td><a href="https://web.stanford.edu/~ouster/cgi-bin/cs140-winter12/staff.php">Staff</a></td>
+              <td class="filler"></td>
+            </tr>
+          </tbody></table>
+        </div>
+      </div>
+      <div id="body">
+<div id="lectureNotes">
+    <h1>Linkers and Dynamic Linking</h1>
+<p class="heading">
+  Lecture Notes for CS 140<br>
+  Winter 2012<br>
+  John Ousterhout
+</p>
+<div class="spacer"></div>
+<ul><li>Readings for this topic from <i>Operating System Concepts</i>:
+  none.
+</li></ul>
+<div class="spacer"></div>
+<ul><li>When a process is running, what does its memory look like?
+  A collection of regions called <i>sections</i>.
+  Basic memory layout for Linux and other Unix systems:
+  <ul><li>Code (or "text" in Unix terminology): starts at location 0
+  </li><li>Data: starts immediately above code, grows upward
+  </li><li>Stack: starts at highest address, grows downward
+  </li></ul>
+</li></ul>
+<div class="spacer"></div>
+<ul><li>System components that take part in managing a process's
+  memory:
+  <ul><li>Compiler and assembler:
+    <ul><li>Generate one <i>object file</i> for each source code file
+      containing information for that source file.
+    </li><li>Information is incomplete, since each source file generally
+      references some things defined in other source files.
+    </li></ul>
+  </li><li>Linker:
+    <ul><li>Combines all of the object files for one program into
+      a single object file.
+    </li><li>Linker output is complete and self-sufficient.
+    </li></ul>
+  </li><li>Operating system:
+    <ul><li>Loads object files into memory.
+    </li><li>Allows several different processes to share memory at
+      once.
+    </li><li>Provides facilities for processes to get more memory after
+      they've started running.
+    </li></ul>
+  </li><li>Run-time library:
+    <ul><li>Works together with OS to provide dynamic allocation routines,
+      such as <span class="code">malloc</span> and <span class="code">free</span> in C.
+    </li></ul>
+  </li></ul>
+<div class="spacer"></div>
+</li><li>Linkers (or Linkage Editors, <span class="code">ld</span> in Unix,
+  <span class="code">LINK</span> on Windows):  combine
+  many separate pieces of a program, re-organize storage
+  allocation.  Typically invoked invisibly by compilers.
+<div class="spacer"></div>
+</li><li>Three functions of a linker:
+  <ul><li>Collect all the pieces of a program.
+  </li><li>Figure out a new memory organization so that all the
+    pieces fit together (combine like sections).
+  </li><li>Touch up addresses so that the program can run
+    under the new memory organization.
+  </li></ul>
+</li><li>Result: a runnable program stored in a new object file
+  called an <i>executable</i>.
+<div class="spacer"></div>
+</li><li>Problems linker must solve:
+  <ul><li>Assembler doesn't know addresses of external objects when assembling
+    files separately.  E.g. where is <span class="code">printf</span> routine?
+    <ul><li>Assembler just puts zero in the object file for each unknown address
+    </li></ul>
+  </li><li>Assembler doesn't know where the things it's assembling will
+    go in memory
+    <ul><li>Assume that things start at address zero, let linker re-arrange.
+    </li></ul>
+  </li></ul>
+<div class="spacer"></div>
+</li><li>Each object file consists of:
+  <ul><li><i>Sections</i>, each holding a distinct kind of information.
+    <ul><li>Typical sections: code ("text") and data.
+    </li><li>For each section, object file contains size and current location
+      of the section, plus initial contents, if any
+    </li></ul>
+  </li><li><i>Symbol table</i>: name and current location of variable or procedure
+    that can potentially be referenced in other object files.
+  </li><li><i>Relocation records </i>: information about addresses referenced
+    in this object file that the linker must adjust once it knows the
+    final memory allocation.
+  </li><li>Additional information for debugging (e.g. map from line numbers
+    in the source file to location in the code section).
+  </li></ul>
+<div class="spacer"></div>
+</li><li>Example files:
+  <br><span class="code">main.c</span>:
+  <div class="code"><pre>extern float sin();
+extern printf(), scanf();
+
+main() {
+  double x, result;
+  printf("Type number: ");
+  scanf("%f", &amp;x);
+  result = sin(x);
+  printf("Sine is %f\n",
+        result);
+}
+</pre></div>
+  <br><span class="code">stdio.c</span>:
+  <div class="code"><pre>int printf(char *fmt, ...) {
+  ...
+}
+int scanf(char *fmt, ...) {
+  ...
+}
+</pre></div>
+  <br><span class="code">math.c</span>:
+  <div class="code"><pre>double sin(double x) {
+  static double res, lastx;
+  if (x != lastx) {
+    lastx = x;
+    ... compute sin(x) ...
+  }
+  return res;
+}
+</pre></div>
+<div class="spacer"></div>
+</li><li>Linker executes in two passes:
+  <ul><li>Pass 1: read in section sizes, compute final memory layout.
+    Also, read in all symbols, create complete symbol table in memory.
+  </li><li>Pass 2: read in section and relocation information, update
+    addresses, write out new file.
+  </li></ul>
+<div class="spacer"></div>
+</li><li>Relocation records:
+  <ul><li>Address and size of the value to be relocated
+  </li><li>Symbol that determines amount of relocation
+  </li><li>How to relocate:
+    <ul><li>Overwrite with final address of symbol
+    </li><li>Add final address of symbol to current contents; used for
+      accessing element of record:
+      <div class="code"><pre>x = y.q;
+</pre></div>
+      <span class="code">y</span> is an external symbol, but the offset <span class="code">q</span> is
+      known from a header file
+    </li><li>Add difference between final and original addresses of
+      symbol to current contents
+    </li></ul>
+  </li></ul>
+</li></ul>
+<h2>Dynamic Linking</h2>
+<ul><li>Originally all programs were linked <i>statically</i>, as described
+  above:
+  <ul><li>All external references fully resolved
+  </li><li>Each program complete
+  </li></ul>
+</li><li>Since late 1980's most systems have supported <i>shared libraries</i>
+  and <i>dynamic linking</i>:
+  <ul><li>For common library packages, only keep a single copy in memory,
+    shared by all processes.
+  </li><li>Don't know where library is loaded until runtime; must resolve
+    references dynamically, when program runs.
+  </li></ul>
+</li><li>One way of implementing dynamic linking: <i>jump table</i>.
+  <ul><li>Jump table: an array in which each entry is a single machine
+    instruction containing an unconditional branch (jump).
+  </li><li>For each function in a shared library used by the program, there
+    is one entry in the jump table that will jump to the beginning of
+    that function.
+  </li><li>If one of the files being linked is a shared library, the linker
+    doesn't actually include the shared library code in the final program.
+    Instead it creates a jump table with slots for all of the functions
+    that are used from that library.
+  </li><li>For relocation records referring to functions in the shared library,
+    the linker substitutes the address of the jump table entry: when
+    the function is invoked, the caller will "call" the jump table entry,
+    which redirects the call to the real function.
+  </li><li>When the program starts up, the shared library is loaded into memory
+    and the jump table addresses are adjusted to reflect the load location.
+  </li></ul>
+</li></ul>
+
+</div>
+      </div>
+      <div id="footer"><a href="https://web.stanford.edu/~ouster/cgi-bin/cs140-winter12/index.php">CS 140: Operating Systems (Winter 2012)</a><br>
+      Stanford University</div>
+    </div>
+  
+
+</body></html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)https://jhucsf.github.io/fall2019/hw/hw4.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>601.229 (F19): Homework 4: MIPS, cache simulator</title>
+	<link rel="shortcut icon" href="https://jhucsf.github.io/fall2019/img/favicon.png">
+	<link rel="stylesheet" type="text/css" href="./601.229 (F19)_ Homework 4_ MIPS, cache simulator_files/syntax.css">
+	<style>
+		table {
+			border-collapse: collapse;
+			border-top: 1px solid black;
+			border-bottom: 1px solid black;
+		}
+
+		tr { border: 1px solid black; }
+		
+		th {
+			text-align: left;
+		}
+		
+		th, td {
+			padding: 4px 8px;
+		}
+
+		#content {
+			margin: 0 auto;
+			max-width: 48em;
+		}
+	</style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1006.0" data-gr-ext-installed="">
+	<div id="content">
+		<h1>601.229 (F19): Homework 4: MIPS, cache simulator</h1>
+		<ul>
+  <li><strong>Out on:</strong> Friday, Oct 11, 2019</li>
+  <li><strong>Due by:</strong>  <strike>Monday, Oct 28, 2019 before 10:00 pm</strike> Tuesday, Oct 29, 2019 before 10:00 pm</li>
+  <li><strong>Collaboration:</strong> None</li>
+  <li><strong>Grading:</strong> Packaging 10%, Style 10%, Design 10%, Functionality 70%</li>
+</ul>
+
+<h2 id="overview">Overview</h2>
+
+<p>In this assignment you will write and analyze MIPS assembly code, and implement a cache simulator to evaluate the effects of different caching strategies on the number of cycles required to execute a sequence of memory references.</p>
+
+<p>This is a pretty significant assignment, and we are giving you 2 full weeks to work on it.  This is because we <em>expect</em> it to require 2 weeks, so plan accordingly!</p>
+
+<h3 id="expectation-of-original-work">Expectation of original work</h3>
+
+<p>You might be able to find answers to these problems on the web.  Please resist the temptation to do this, and understand that turning in work that is not your original work is a violation of academic integrity.  All of these problems have straightforward solutions that you should be able to work out with a bit of thought and effort.</p>
+
+<h2 id="problem-1-mips-assembly-14">Problem 1: MIPS assembly (14%)</h2>
+
+<p>Write a MIPS assembly language program that implements a function called <code class="language-plaintext highlighter-rouge">vec_sum_sq</code>.  If it were a C function, it would have the following declaration:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">vec_sum_sq</span><span class="p">(</span><span class="kt">int</span> <span class="n">result</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">vec1</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">vec2</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">count</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>The parameters <code class="language-plaintext highlighter-rouge">result</code>, <code class="language-plaintext highlighter-rouge">vec1</code>, and <code class="language-plaintext highlighter-rouge">vec2</code> are all arrays of 32 bit int values.  The length of each array is specified by the <code class="language-plaintext highlighter-rouge">count</code> parameter.</p>
+
+<p>The computation done by the function is that for each index <em>i</em> in the range 0 to <code class="language-plaintext highlighter-rouge">count-1</code>:</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">result[</code><em>i</em><code class="language-plaintext highlighter-rouge">] ← vec1[</code><em>i</em><code class="language-plaintext highlighter-rouge">]×vec1[</code><em>i</em><code class="language-plaintext highlighter-rouge">] + vec2[</code><em>i</em><code class="language-plaintext highlighter-rouge">]×vec2[</code><em>i</em><code class="language-plaintext highlighter-rouge">]</code></p>
+</blockquote>
+
+<p>In other words, each element of the <code class="language-plaintext highlighter-rouge">result</code> array should be assigned the sum of the squares of the corresponding elements of <code class="language-plaintext highlighter-rouge">vec1</code> and <code class="language-plaintext highlighter-rouge">vec2</code>.</p>
+
+<p>Use the following template for your program (copy these contents into a file called <code class="language-plaintext highlighter-rouge">Problem1.s</code>):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	.text
+
+	.globl main
+	.globl vec_sum_sq
+
+main:
+	la $a0, result
+	la $a1, vec1
+	la $a2, vec2
+	la $t0, n_elts
+	lw $a3, 0($t0)
+
+	# save return address
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+
+	# call vec_sum_sq
+	jal vec_sum_sq
+
+	# restore return address
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+
+	# return from main
+	jr $ra
+
+# $a0 is base address of result vector.
+# $a1 is base address of first argument vector.
+# $a2 is base address of second argument vector.
+# $a3 is the number of elements in the argument vectors.
+vec_sum_sq:
+	# TODO - add your code here!
+
+########################################################################
+# Data segment: you are free to change the value of the
+# n_elt variables and the contents of the vec1 and vec2 arrays
+# for testing purposes.
+
+	.data
+result:	.space 10000
+n_elts:	.word 5
+vec1:	.word 1, 2, 3, 4, 5
+vec2:	.word 6, 7, 8, 9, 10
+</code></pre></div></div>
+
+<p>Test code is provided to allow you to test your function.
+When you execute the <code class="language-plaintext highlighter-rouge">main</code> function provided in the template,
+which uses the provided <code class="language-plaintext highlighter-rouge">n_elts</code>, <code class="language-plaintext highlighter-rouge">vec1</code>, and <code class="language-plaintext highlighter-rouge">vec2</code> variables,
+the first 5 elements of the <code class="language-plaintext highlighter-rouge">result</code> array should contain the
+values 37, 53, 73, 97, and 125.</p>
+
+<p>Use the <code class="language-plaintext highlighter-rouge">spim</code> simulator to execute and debug your code.</p>
+
+<h3 id="optimization">Optimization!</h3>
+
+<p>Once you get your <code class="language-plaintext highlighter-rouge">vec_sum_sq</code> function working, try to optimize it
+to avoid pipeline stalls.  Include a comments in your code indicating</p>
+
+<ul>
+  <li>the rationale for your optimization decisions, such as the
+order of instructions, and</li>
+  <li>how successful you think you were, and why</li>
+</ul>
+
+<h2 id="problem-2-cache-simulator-56">Problem 2: Cache simulator (56%)</h2>
+
+<p><strong>Acknowledgment</strong>: This problem was originally developed by <a href="https://www.cs.jhu.edu/~phf">Peter Froehlich</a> for <a href="https://www.cs.jhu.edu/~phf/2018/fall/cs229">his version of CSF</a>.</p>
+
+<p>This problem focuses on simulating and evaluating
+<a href="https://en.wikipedia.org/wiki/Cache_/(computing/)">caches</a>. We’ll give
+you a number of <strong>memory traces</strong> from real benchmark programs. You’ll
+implement a program to <strong>simulate</strong> how a variety of caches perform on
+these traces. You’ll then use your programs and the given traces to
+determine the <strong>best overall cache configuration</strong>.</p>
+
+<h3 id="programming-languages">Programming Languages</h3>
+
+<p>You can use either C or C++ for this assignment. You’re allowed to use
+the <strong>standard</strong> library of your chosen language as much as you would
+like to, but you are <strong>not</strong> allowed to use any additional
+(non-standard) libraries.</p>
+
+<!--
+**We *highly* recommend that you opt for C++ because the C++ standard
+library contains *many* useful data structures that you would have to
+write *from scratch* in C\!** Don’t waste your time on data structures,
+spend your time working on the *actual* problem\! **However, if you pick
+C++ you must write *real* C++ code, not just “C with some classes added”
+as it were\!**
+-->
+<p>One advantage of choosing C++ is that you can use the built-in
+container data structures such as <code class="language-plaintext highlighter-rouge">map</code>, <code class="language-plaintext highlighter-rouge">vector</code>, etc.
+Regardless of which language you use, we highly encourage you to
+write modular, well-designed code, and to develop data types and
+functions to manage the complexity of the program.</p>
+
+<!--
+We must be able to build your program on the Lubuntu 18.04 LTS reference
+system using `make` with no additional arguments, so obviously you need
+to include a working `Makefile` with your source code. Make sure you use
+the C/C++ compiler flags posted on
+[Piazza](http://piazza.com/jhu/fall2019/601229) and follow the style
+guide posted there for your code.
+-->
+
+<p>Your must provide a <code class="language-plaintext highlighter-rouge">Makefile</code> such that</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">make clean</code> removes all object files and executables, and</li>
+  <li><code class="language-plaintext highlighter-rouge">make</code> or <code class="language-plaintext highlighter-rouge">make csim</code> compiles and links your program, producing an executable called <code class="language-plaintext highlighter-rouge">csim</code></li>
+</ul>
+
+<p>Your code should compile cleanly with gcc 7.x using the <code class="language-plaintext highlighter-rouge">-Wall -Wextra --pedantic</code> compiler flags.</p>
+
+<h3 id="problem-2a-cache-simulator-50">Problem 2(a): Cache Simulator (50%)</h3>
+
+<p>You will design and implement a <strong>cache simulator</strong> that can be used to
+study and compare the effectiveness of various cache configurations.
+Your simulator will read a <strong>memory access trace</strong> from standard input,
+simulate what a cache based on certain parameters would do in response
+to these memory access patterns, and finally produce some summary
+statistics to standard output. Let’s start with the file format of the
+memory access traces:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s 0x1fffff50 1
+l 0x1fffff58 1
+l 0x1fffff88 6
+l 0x1fffff90 2
+l 0x1fffff98 2
+l 0x200000e0 2
+l 0x200000e8 2
+l 0x200000f0 2
+l 0x200000f8 2
+l 0x30031f10 3
+s 0x3004d960 0
+s 0x3004d968 1
+s 0x3004caa0 1
+s 0x3004d970 1
+s 0x3004d980 6
+l 0x30000008 1
+l 0x1fffff58 4
+l 0x3004d978 4
+l 0x1fffff68 4
+l 0x1fffff68 2
+s 0x3004d980 9
+l 0x30000008 1
+</code></pre></div></div>
+
+<p>As you can see, each memory access performed by a program is recorded on
+a separate line. There are three “fields” separated by white space. The
+first field is either <code class="language-plaintext highlighter-rouge">l</code> or <code class="language-plaintext highlighter-rouge">s</code> depending on whether the processor is
+“loading” from or “storing” to memory. The second field is a 32-bit
+memory address given in hexadecimal; the <code class="language-plaintext highlighter-rouge">0x</code> at the beginning means
+“the following is hexadecimal” and is not itself part of the address.
+You can <strong>ignore</strong> the third field for this assignment.</p>
+
+<p>Your cache simulator will be configured with the following cache design
+parameters which are given as command-line arguments (see below):</p>
+
+<ul>
+  <li>number of sets in the cache (a positive power-of-2)</li>
+  <li>number of blocks in each set (a positive power-of-2)</li>
+  <li>number of bytes in each block (a positive power-of-2, at least 4)</li>
+  <li><code class="language-plaintext highlighter-rouge">write-allocate</code> or <code class="language-plaintext highlighter-rouge">no-write-allocate</code></li>
+  <li><code class="language-plaintext highlighter-rouge">write-through</code> or <code class="language-plaintext highlighter-rouge">write-back</code></li>
+  <li><code class="language-plaintext highlighter-rouge">lru</code> (least-recently-used) or <code class="language-plaintext highlighter-rouge">fifo</code> evictions</li>
+</ul>
+
+<p>Note that certain combinations of these design parameters account for
+direct-mapped, set-associative, and fully associative caches:</p>
+
+<ul>
+  <li>a cache with n sets of 1 block each is direct-mapped</li>
+  <li>a cache with n sets of m blocks each is m-way set-associative</li>
+  <li>a cache with 1 set of n blocks is fully associative</li>
+</ul>
+
+<p>The smallest cache you must be able to simulate has 1 set with 1 block
+with 4 bytes; this cache can only remember a single 4-byte memory
+reference and nothing else; it can therefore only be beneficial if
+consecutive memory references in a trace go to the exact same address.
+<strong>You should probably use this tiny cache for basic sanity testing.</strong></p>
+
+<p>A few reminders about the other three parameters: The <strong>write-allocate</strong>
+parameter determines what happens for a <strong>cache miss</strong> during a
+<strong>store</strong>:</p>
+
+<ul>
+  <li>for <code class="language-plaintext highlighter-rouge">write-allocate</code> we bring the relevant memory block into the
+cache <em>before</em> the store proceeds</li>
+  <li>for <code class="language-plaintext highlighter-rouge">no-write-allocate</code> a cache miss during a store does <em>not</em>
+modify the cache</li>
+</ul>
+
+<p>Note that this parameter interacts with the following one. The
+<strong>write-through</strong> parameter determines whether a store <strong>always</strong> writes
+to memory <strong>immediately</strong> or not:</p>
+
+<ul>
+  <li>for <code class="language-plaintext highlighter-rouge">write-through</code> a store writes to the cache as well as to memory</li>
+  <li>for <code class="language-plaintext highlighter-rouge">write-back</code> a store writes to the cache <em>only</em> and marks the
+block <em>dirty</em>; if the block is evicted later, it has to be written
+back to memory before being replaced</li>
+</ul>
+
+<p><strong>It doesn’t make sense to combine <code class="language-plaintext highlighter-rouge">no-write-allocate</code> with <code class="language-plaintext highlighter-rouge">write-back</code>
+because we wouldn’t be able to actually write to the cache for the
+store!</strong></p>
+
+<p>The last parameter is only relevant for associative caches: in
+direct-mapped caches there is no choice for which block to evict!</p>
+
+<ul>
+  <li>for <code class="language-plaintext highlighter-rouge">lru</code> (least-recently-used) we evict the block that has not been
+<strong>accessed</strong> the longest</li>
+  <li>for <code class="language-plaintext highlighter-rouge">fifo</code> (first-in-first-out) we evict the block that has been
+<strong>in the cache</strong> the longest</li>
+</ul>
+
+<p>Your cache simulator should assume that loads/stores from/to the cache
+take <strong>one</strong> processor cycle; loads/stores from/to memory take <strong>100</strong>
+processor cycles for <strong>each</strong> 4-byte quantity that is transferred. There
+are plenty of things about caches in real processors that you do <strong>not</strong>
+have to simulate, for example write buffers or smart ways to fill cache
+blocks; implementing all the options above correctly is already somewhat
+challenging, so we’ll leave it at that.</p>
+
+<p>We expect to be able to run your simulator as follows:</p>
+
+<p><code class="language-plaintext highlighter-rouge">./csim 256 4 16 write-allocate write-back lru &lt; sometracefile</code></p>
+
+<p>This would simulate a cache with 256 sets of 4 blocks each (aka a 4-way
+set-associative cache), with each block containing 16 bytes of memory;
+the cache performs write-allocate but no write-through (so it does
+write-back instead), and it evicts the least-recently-used block if it
+has to. (As an aside, note that this cache has a total size of 16384
+bytes (16 kB) if we ignore the space needed for tags and other
+meta-information.)</p>
+
+<p>After the simulation is complete, your cache simulator is expected to
+print the following summary information in <strong>exactly</strong> the format given
+below:</p>
+
+<pre>Total loads: <i>count</i>
+Total stores: <i>count</i>
+Load hits: <i>count</i>
+Load misses: <i>count</i>
+Store hits: <i>count</i>
+Store misses: <i>count</i>
+Total cycles: <i>count</i>
+</pre>
+
+<p>The <tt><i>count</i></tt> value is simply an occurrence count.  As a concrete example,
+here is an example invocation of the program on one of the example traces, <code class="language-plaintext highlighter-rouge">gcc.trace</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./csim 256 4 16 write-allocate write-back fifo &lt; gcc.trace
+</code></pre></div></div>
+
+<p>This invocation should produce the following output:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Total loads: 318197
+Total stores: 197486
+Load hits: 314171
+Load misses: 4026
+Store hits: 188047
+Store misses: 9439
+Total cycles: 9845283
+</code></pre></div></div>
+
+<p>Note that due to slight variations in how you might reasonably interpret the
+simulator specification, your <code class="language-plaintext highlighter-rouge">Total cycles</code> value could be slightly different,
+but should be fairly close.  For all of the other counts, your simulator’s
+output should exactly match the output above.</p>
+
+<p>We <strong>strongly</strong> encourage you to use Piazza to post traces and simulator results,
+so that you can compare your results with other students’ results.</p>
+
+<h3 id="example-traces">Example traces</h3>
+
+<p>Here are some traces you can use for testing and empirical evaluation:</p>
+
+<ul>
+  <li><a href="https://jhucsf.github.io/fall2019/hw/hw4_traces/gcc.trace">hw4_traces/gcc.trace</a></li>
+  <li><a href="https://jhucsf.github.io/fall2019/hw/hw4_traces/read01.trace">hw4_traces/read01.trace</a></li>
+  <li><a href="https://jhucsf.github.io/fall2019/hw/hw4_traces/read02.trace">hw4_traces/read02.trace</a></li>
+  <li><a href="https://jhucsf.github.io/fall2019/hw/hw4_traces/read03.trace">hw4_traces/read03.trace</a></li>
+  <li><a href="https://jhucsf.github.io/fall2019/hw/hw4_traces/swim.trace">hw4_traces/swim.trace</a></li>
+  <li><a href="https://jhucsf.github.io/fall2019/hw/hw4_traces/write01.trace">hw4_traces/write01.trace</a></li>
+  <li><a href="https://jhucsf.github.io/fall2019/hw/hw4_traces/write02.trace">hw4_traces/write02.trace</a></li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">gcc.trace</code> and <code class="language-plaintext highlighter-rouge">swim.trace</code> are traces from real programs, so you should
+consider using them in your empirical evaluation.</p>
+
+<h3 id="hints">Hints</h3>
+
+<p>Your simulation is only concerned with hits and misses, at no point do
+you need the <strong>actual</strong> data that’s stored in the cache; that’s the
+reason why the trace files do not contain that information in the first
+place.</p>
+
+<p>Don’t try to implement all the options right away, start by writing a
+simulator that can only run direct-mapped caches with write-through and
+no-write-allocate. Once you have that working, extend step-by-step to
+make the other design parameters work. Also, sanity-check your simulator
+frequently with simple, hand-crafted traces for which you can still
+derive manually what the behavior should be.</p>
+
+<p><em>More hints coming soon…</em> (Sorry, no more hints will be forthcoming
+on this assignment description page, but please do check out
+<a href="http://piazza.com/jhu/fall2019/601229">Piazza</a>).</p>
+
+<h3 id="problem-2b-best-cache-6">Problem 2(b): Best Cache? (6%)</h3>
+
+<p>For the second problem, you’ll use the memory traces as well as your
+simulator to determine which cache configuration has the <strong>best overall
+effectiveness</strong>. You should take a variety of properties into account:
+hit rates, miss penalties, total cache size (including overhead), etc.
+In your <code class="language-plaintext highlighter-rouge">README</code> describe in detail what experiments you ran (and
+why!), what results you got (and how!), and what, in your opinion, is
+the best cache configuration of them all.</p>
+
+<h3 id="credits">Credits</h3>
+
+<p>The memory traces above come from a similar programming assignment by
+Steven Swanson at the University of California, San Diego. Thank you
+Steven!</p>
+
+<h2 id="deliverables">Deliverables</h2>
+
+<p>Create a zipfile that has your MIPS assembly program for Problem 1
+in a file called <code class="language-plaintext highlighter-rouge">Problem1.s</code>, as well as all of the files for Problem 2.
+All of the files should be in the top level directory of the zipfile.
+As an example, if your zipfile is called <code class="language-plaintext highlighter-rouge">hw4.zip</code>, the command
+<code class="language-plaintext highlighter-rouge">unzip -l hw4.zip</code> might produce the following output:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Archive:  hw4.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+    14719  2019-10-10 13:07   main.c
+      149  2019-10-08 10:22   Makefile
+     1186  2019-10-10 14:38   Problem1.s
+    12075  2019-10-10 14:38   README
+---------                     -------
+    28129                     4 files
+</code></pre></div></div>
+
+<p>Your exact output will almost certainly differ, for example, depending on
+how you structured your program for Problem 2.</p>
+
+<p>Upload your zipfile to Gradescope as <strong>HW4</strong>.</p>
+
+<h2 id="grading">Grading</h2>
+
+<p>For reference, here is a short explanation of the grading criteria; some
+of the criteria don’t apply to all problems, and not all of the criteria
+are used on all assignments.</p>
+
+<p><strong>Packaging</strong> refers to the proper organization of the stuff you hand
+in, following both the guidelines for Deliverables above as well as the
+general submission instructions for assignments on
+<a href="http://piazza.com/jhu/fall2019/601229">Piazza</a>.</p>
+
+<p><strong>Style</strong> refers to C programming style, including things like
+consistent indentation, appropriate identifier names, useful comments,
+suitable documentation, etc. Simple, clean, readable code is what you
+should be aiming for. Please see the <a href="https://jhucsf.github.io/fall2019/notes/style.html">Coding style guidelines</a>.</p>
+
+<p><strong>Design</strong> refers to proper modularization (functions, modules, etc.)
+and an appropriate choice of algorithms and data structures.</p>
+
+<p><strong>Performance</strong> refers to how fast/with how little memory your programs
+can produce the required results compared to other submissions.</p>
+
+<p><strong>Functionality</strong> refers to your programs being able to do what they
+should according to the specification given above; if the specification
+is ambiguous, ask for clarification! (It also refers to you simply doing
+the required work, which may not be programming alone.)</p>
+
+<p><strong>If your programs cannot be built you will get no points whatsoever.</strong> If
+your programs cannot be built without warnings using the required
+compiler options given on
+<a href="http://piazza.com/jhu/fall2019/601229">Piazza</a> we will take off 10%
+(except if you document a <em>very</em> good reason). If your programs cannot
+be built using <code class="language-plaintext highlighter-rouge">make</code> we will take off 10%. If <code class="language-plaintext highlighter-rouge">valgrind</code> detects memory
+errors in your programs, we will take off 10%. If your programs fail
+miserably even once, i.e. terminate with an exception of any kind or
+dump core, we will take off 10% (for each such case).</p>
+
+	</div>
+
+
+
+
+<!--
+vim:ts=2:
+-->
+</body></html>
